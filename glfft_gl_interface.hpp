@@ -87,11 +87,12 @@ namespace GLFFT
             ~GLBuffer();
 
             GLBuffer(GLuint obj) : name(obj), owned(false) {}
+			GLBuffer(const void *initial_data, size_t size, AccessMode access);
             GLuint get() const { return name; }
 
         private:
             GLuint name;
-            GLBuffer(const void *initial_data, size_t size, AccessMode access);
+            
             bool owned = true;
     };
 

@@ -20,7 +20,7 @@
 #include "glfft_interface.hpp"
 #include "glfft.hpp"
 #include <utility>
-
+#include<algorithm>
 #ifdef GLFFT_SERIALIZATION
 #include "rapidjson/include/rapidjson/reader.h"
 #include "rapidjson/include/rapidjson/prettywriter.h"
@@ -64,17 +64,28 @@ FFTStaticWisdom FFTWisdom::get_static_wisdom_from_renderer(Context *context)
         res.max_vector_size = 4;
         res.shared_banked = FFTStaticWisdom::True;
     }
-    else if (strstr(renderer, "Mali"))
-    {
-        context->log("Detected Mali GPU.\n");
+	else if (strstr(renderer, "Mali"))
+	{
+		context->log("Detected Mali GPU.\n");
 
-        res.min_workgroup_size = 4;
-        res.min_workgroup_size_shared = 4;
-        res.max_workgroup_size = 64; // Going beyond 64 threads per WG is not a good idea.
-        res.min_vector_size = 4;
-        res.max_vector_size = 4;
-        res.shared_banked = FFTStaticWisdom::False;
-    }
+		res.min_workgroup_size = 4;
+		res.min_workgroup_size_shared = 4;
+		res.max_workgroup_size = 64; // Going beyond 64 threads per WG is not a good idea.
+		res.min_vector_size = 4;
+		res.max_vector_size = 4;
+		res.shared_banked = FFTStaticWisdom::False;
+	}
+	else if (strstr(renderer, "Iris"))
+	{
+		context->log("Detected Mali GPU.\n");
+
+		//res.min_workgroup_size = 4;
+		//res.min_workgroup_size_shared = 4;
+		//res.max_workgroup_size = min(threads, 256u);
+		//res.min_vector_size = 2;
+		//res.max_vector_size = 2;
+		//res.shared_banked = FFTStaticWisdom::False;
+	}
     // TODO: Add more GPUs.
 
     return res;
@@ -110,7 +121,7 @@ pair<double, FFTOptions::Performance> FFTWisdom::learn_optimal_options(
 
 void FFTWisdom::learn_optimal_options_exhaustive(Context *context,
         unsigned Nx, unsigned Ny,
-        Type type, Target input_target, Target output_target, const FFTOptions::Type &fft_type)
+	GLFFT::Type type, Target input_target, Target output_target, const FFTOptions::Type &fft_type)
 {
     bool learn_resolve = type == ComplexToReal || type == RealToComplex;
     Mode vertical_mode = type == ComplexToComplexDual ? VerticalDual : Vertical;
@@ -484,6 +495,7 @@ const FFTOptions::Performance& FFTWisdom::find_optimal_options_or_default(unsign
 }
 
 #ifdef GLFFT_SERIALIZATION
+
 std::string FFTWisdom::archive() const
 {
     StringBuffer s;

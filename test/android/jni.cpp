@@ -150,6 +150,7 @@ void glfft_log(const char *fmt, ...)
 #endif
 }
 
+#ifdef GLFFT_CLI_ASYNC
 static int start_task(const vector<const char*> &argv)
 {
     GLFFT::set_async_task([argv] {
@@ -161,6 +162,7 @@ static int start_task(const vector<const char*> &argv)
     GLFFT::get_async_task()->start();
     return 0;
 }
+#endif
 
 JNIEXPORT jint JNICALL Java_net_themaister_glfft_Native_beginRunTestSuiteTask(JNIEnv *, jclass)
 {
